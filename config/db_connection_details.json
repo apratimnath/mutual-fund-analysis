@@ -1,0 +1,7 @@
+{
+	"host" : "192.168.0.103",
+	"username" : "remoteuser",
+	"password" : "Apr@123",
+	"port" : 3306,
+	"database": "mf_analysis_db"
+}
