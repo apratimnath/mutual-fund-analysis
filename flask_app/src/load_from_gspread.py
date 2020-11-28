@@ -39,8 +39,10 @@ def get_credential_and_connect():
             client = gspread.authorize(creds)
             
         else:
-            cred_data = json.loads(json_str)
+            print(json_str)
+            cred_data = json.loads(json_str)            
             cred_data['private_key'] = cred_data['private_key'].replace('\\n', '\n')
+            print(cred_data)
             creds = service_account.Credentials.from_service_account_info(cred_data)
             # Connecting to the Google Spreadsheet Client
             client = gspread.authorize(creds)
