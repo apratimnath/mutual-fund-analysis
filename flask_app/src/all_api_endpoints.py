@@ -13,6 +13,8 @@ from datetime import datetime
 import load_from_gspread
 import pandas as pd
 from http.client import HTTPException
+import internal_calculations
+import send_mail
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -86,8 +88,19 @@ def connect_gspread():
     else:
         # Creating the dataframe
         frame_data = pd.DataFrame(list_data)
-        return jsonify(list_data), 200, {'Content-Type': 'application/json'}
+        do_data_cleaning()
+        calculations_dict = internal_calculations.get_initial_results_dict(frame_data)
+        
+        if(calculations_dict == None or len(calculations_dict) == 0):
+            return internal_server_error("Issue in calculating the daily changes. Please refer logs for fore details")
+        else:
+            return jsonify(calculations_dict), 200, {'Content-Type': 'application/json'}
 
+
+# Method to do data cleaning of all kind
+def do_data_cleaning():
+    frame_data.replace([''], 'Unknown', inplace=True)
+    
 '''
 The following method will run a job, to store the next 5 days for the upcoming wee in Google Sheet
 The method runs every Saturday at 5:00 PM
@@ -96,10 +109,31 @@ On success or error, it sends a mail accordingly
 
 
 def weekly_insert_in_sheet():
+    global frame_data
+    global list_data
+    
+    schedule_success = True
+    
     print("Scheduled Job started")
-    current_date = datetime.now()
-    print("Scheduled Job successful at -", end=" ")
-    print(current_date)
+    # Reload the intial data
+    list_data = load_from_gspread.get_credential_and_connect()
+    
+    if(list_data == None or len(list_data) == 0):
+        schedule_success = False
+        print("Unable to refresh the spreadsheet from google")
+    else:
+        # Creating the dataframe
+        frame_data = pd.DataFrame(list_data)        
+        schedule_success = send_mail.driver_function(frame_data, list_data)
+    
+    if(schedule_success): 
+        current_date = datetime.now()
+        print("Scheduled Job successful at -", end=" ")
+        print(current_date)
+    else:
+        current_date = datetime.now()
+        print("Scheduled Job failed at -", end=" ")
+        print(current_date)
 
     
 scheduler = BackgroundScheduler()

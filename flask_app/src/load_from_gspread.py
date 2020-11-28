@@ -7,10 +7,12 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import os
 import json
-from google.oauth2 import service_account
 
+
+sheet = None
 
 def get_credential_and_connect():
+    global sheet
     # Defining the scope of the OAuth Authentication
     scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets', "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
              
@@ -38,11 +40,9 @@ def get_credential_and_connect():
             # Connecting to the Google Spreadsheet Client
             client = gspread.authorize(creds)
             
-        else:
-            print(json_str)
+        else: 
             cred_data = json.loads(json_str)            
             cred_data['private_key'] = cred_data['private_key'].replace('\\n', '\n')
-            print(cred_data)
             creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_data, scope)
             # Connecting to the Google Spreadsheet Client
             client = gspread.authorize(creds)
@@ -53,3 +53,10 @@ def get_credential_and_connect():
         return sheet.get_all_records()
     except:
         return None
+    
+def update_row(value, total_rows):
+    try:
+        sheet.insert_row(value, total_rows, 'RAW')
+    except:
+        raise Exception
+        
