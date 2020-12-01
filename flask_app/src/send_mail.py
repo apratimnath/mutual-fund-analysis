@@ -8,6 +8,7 @@ import smtplib
 from email.message import EmailMessage
 import json
 import load_from_gspread
+import os
 
 
 def driver_function(frame_data, list_data):
@@ -56,20 +57,31 @@ def email_alert(subject, body, to):
     msg = EmailMessage()
     msg.set_content(body)
     msg['subject'] = subject
-    msg['to'] = to
-    
-    # Might give error 9due to relative path
-    gmail_credentials_file = open("./config/gmail_credentials.json")
-    gmail_credentials = json.load(gmail_credentials_file)
-    
-    sender = gmail_credentials['email']
-    password = gmail_credentials['password']    
-    
-    msg['from'] = sender
+    msg['to'] = to    
     
     server = smtplib.SMTP("smtp.gmail.com", 587)
         
     try:
+        json_str = os.environ.get('GMAIL_CREDENTIALS')
+        is_local = False
+        
+        if(not json_str or len(json_str) == 0):
+            is_local = True
+            
+        print("The state of application is Local", end=" ")
+        print(is_local)
+        
+        if(is_local):
+            gmail_credentials_file = open("../../config/gmail_credentials.json")
+            gmail_credentials = json.load(gmail_credentials_file)
+        else:
+            gmail_credentials = json.loads(json_str)
+        
+        sender = gmail_credentials['email']
+        password = gmail_credentials['password']
+        
+        msg['from'] = sender 
+    
         server.starttls()
         server.login(sender, password)
         
@@ -137,3 +149,50 @@ def update_data_and_create_message_body(days_chunk, frame_data, list_data):
     to = "apratimnath7@gmail.com";
     
     return email_alert(subject, body, to)
+
+'''
+Created on 01.12.2020
+
+The requirement is to send a mail to the registered user from the Dev ID, so that the Dev ID can have a track of the request
+And created a corresponding user in Okta
+'''
+
+
+def register_user(user_details):
+    first_name = user_details['firstName']
+    last_name = user_details['lastName']
+    email = user_details['email']
+    contact_number = str(user_details['mobileNumber'])
+    
+    try:
+        body = '''
+        Hi {first_name},
+        
+        Thank you for registering for the Personal Finance Management App.
+        Our teams are working on providing you the required access.
+        In the mean time, you can go through some of the links, regarding the application -
+        
+        1. Dashboard GitHub Repo - https://github.com/apratimnath/mutual-fund-analysis-dashboard
+        2. API GitHub Repo - https://github.com/apratimnath/mutual-fund-analysis
+        3. LinkedIn Contact - https://www.linkedin.com/in/apratim-nath-871a69145
+        
+        We're creating your profile with the following information as provided - 
+        
+        1. First Name - {first_name}
+        2. Last Name - {last_name}
+        3. Email (Identifier) - {email}
+        4. Contact - {contact_number}
+        
+        If the Email ID is incorrect please revert back within 48 hours so that our teams can make the necessary changes.
+        Rest assured we're committed to cater to your every need of Financial Analysis
+        
+        Regards,
+        Dev Team,
+        Personal Finance Analysis Team
+        '''.format(first_name=first_name, last_name=last_name, email=email, contact_number=contact_number)
+        
+        subject = "Welcome to Personal Finance Analysis App"
+        
+        return email_alert(subject, body, email)
+    except:
+        return False

@@ -4,7 +4,7 @@ Created on Nov 28, 2020
 @author: apratim
 '''
 import flask
-from flask import jsonify
+from flask import request, jsonify
 from flask_cors.extension import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -95,6 +95,27 @@ def connect_gspread():
             return internal_server_error("Issue in calculating the daily changes. Please refer logs for fore details")
         else:
             return jsonify(calculations_dict), 200, {'Content-Type': 'application/json'}
+
+
+# Send mail to register new users
+@app.route('/api/v1/register-user', methods=['POST'])
+def register_user():
+    global frame_data
+    global list_data
+    user_details = request.json
+    print(user_details)
+    
+    if(user_details != None):
+        is_success = send_mail.register_user(user_details)
+        
+        if(is_success):
+            response = {}
+            response['status'] = "Success";
+            response['message'] = "Successfully sent mail"
+            
+            return jsonify(response), 200, {'Content-Type': 'application/json'}
+    else:
+        return no_content("No Content found in request body")
 
 
 # Method to do data cleaning of all kind
