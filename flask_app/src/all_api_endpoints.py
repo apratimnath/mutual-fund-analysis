@@ -103,7 +103,6 @@ def register_user():
     global frame_data
     global list_data
     user_details = request.json
-    print(user_details)
     
     if(user_details != None):
         is_success = send_mail.register_user(user_details)
