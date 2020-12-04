@@ -15,7 +15,7 @@ warnings.filterwarnings('ignore')
 
 
 def driver_function(frame_data, list_data):
-    list_to_insert = create_list_to_insert(frame_data, list_data);
+    list_to_insert = create_list_to_insert(frame_data, list_data)
     days_chunk = create_day_chunks(list_to_insert)
     
     return update_data_and_create_message_body(days_chunk, frame_data, list_data)
@@ -151,7 +151,7 @@ def update_data_and_create_message_body(days_chunk, frame_data, list_data):
         Mutual Fund Analysis App'''.format(var=start_date)
         
     subject = "Mutual Funds - Weekly Insertion of Base Data"
-    to = "apratimnath7@gmail.com";
+    to = "apratimnath7@gmail.com"
     
     return email_alert(subject, body, to)
 

@@ -112,7 +112,7 @@ def register_user():
         
         if(is_success):
             response = {}
-            response['status'] = "Success";
+            response['status'] = "Success"
             response['message'] = "Successfully sent mail"
             
             return jsonify(response), 200, {'Content-Type': 'application/json'}
