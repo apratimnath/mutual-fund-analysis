@@ -7,6 +7,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import os
 import json
+import warnings
+
+warnings.filterwarnings('ignore')
 
 
 sheet = None
@@ -36,7 +39,9 @@ def get_credential_and_connect():
         print(is_local)
         
         if(is_local): 
-            creds = ServiceAccountCredentials.from_json_keyfile_name("../../secret_config/google_credentials.json", scope)
+            print(os.getcwd())
+            file_path = os.getcwd() + "/src/secret_config/google_credentials.json"
+            creds = ServiceAccountCredentials.from_json_keyfile_name(file_path, scope)
             # Connecting to the Google Spreadsheet Client
             client = gspread.authorize(creds)
             
@@ -51,7 +56,9 @@ def get_credential_and_connect():
         sheet = client.open("Daily_MF_Returns").sheet1
         
         return sheet.get_all_records()
-    except:
+    except Exception as e:
+        print(str(e))
+
         return None
     
 def update_row(value, total_rows):

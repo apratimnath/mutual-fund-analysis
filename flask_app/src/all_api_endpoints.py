@@ -15,6 +15,9 @@ import pandas as pd
 from http.client import HTTPException
 import internal_calculations
 import send_mail
+import warnings
+
+warnings.filterwarnings('ignore')
 
 app = flask.Flask(__name__)
 CORS(app)

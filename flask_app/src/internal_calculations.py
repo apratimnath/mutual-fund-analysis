@@ -67,8 +67,8 @@ def get_initial_results_dict(original_data):
 def get_app_based_data(last_date_rows, previous_date_rows):
     try:
         # App-wise calculation
-        grouped_last = last_date_rows.groupby('App', as_index=False).agg({'Return':[np.sum, np.mean, np.std]})
-        grouped_previous = previous_date_rows.groupby('App', as_index=False).agg({'Return':[np.sum, np.mean, np.std]})
+        grouped_last = last_date_rows.groupby('App', as_index=False).agg({'Net Change':[np.sum, np.mean, np.std]})
+        grouped_previous = previous_date_rows.groupby('App', as_index=False).agg({'Net Change':[np.sum, np.mean, np.std]})
         
         # Rename previos frame colums
         grouped_previous.columns = ['app', 'prev_sum', 'prev_mean', 'prev_std']
@@ -107,8 +107,8 @@ def get_app_based_data(last_date_rows, previous_date_rows):
 def get_policy_based_data(last_date_rows, previous_date_rows):
     try:
         # Fund-wise calculation
-        grouped_last = last_date_rows.groupby('Policy Name', as_index=False).agg({'Return':[np.sum]})
-        grouped_previous = previous_date_rows.groupby('Policy Name', as_index=False).agg({'Return':[np.sum]})
+        grouped_last = last_date_rows.groupby('Policy Name', as_index=False).agg({'Net Change':[np.sum]})
+        grouped_previous = previous_date_rows.groupby('Policy Name', as_index=False).agg({'Net Change':[np.sum]})
         
         # Rename previos frame colums
         grouped_previous.columns = ['policy_name', 'prev_sum']
@@ -141,8 +141,8 @@ def get_policy_based_data(last_date_rows, previous_date_rows):
 def get_overall_data(last_date_rows, previous_date_rows):
     try:
         # Overall calculation
-        grouped_last = last_date_rows.groupby('Date', as_index=False).agg({'Return':[np.sum, np.mean, np.std]})
-        grouped_previous = previous_date_rows.groupby('Date', as_index=False).agg({'Return':[np.sum, np.mean, np.std]})
+        grouped_last = last_date_rows.groupby('Date', as_index=False).agg({'Net Change':[np.sum, np.mean, np.std]})
+        grouped_previous = previous_date_rows.groupby('Date', as_index=False).agg({'Net Change':[np.sum, np.mean, np.std]})
         
         # Rename previos frame colums
         grouped_previous.columns = ['date', 'prev_sum', 'prev_mean', 'prev_std']

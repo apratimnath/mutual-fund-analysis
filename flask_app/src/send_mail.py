@@ -9,6 +9,9 @@ from email.message import EmailMessage
 import json
 import load_from_gspread
 import os
+import warnings
+
+warnings.filterwarnings('ignore')
 
 
 def driver_function(frame_data, list_data):
@@ -72,7 +75,9 @@ def email_alert(subject, body, to):
         print(is_local)
         
         if(is_local):
-            gmail_credentials_file = open("../../config/gmail_credentials.json")
+            print(os.getcwd())
+            file_path = os.getcwd() + "/src/secret_config/gmail_credentials.json"
+            gmail_credentials_file = open(file_path)
             gmail_credentials = json.load(gmail_credentials_file)
         else:
             gmail_credentials = json.loads(json_str)
