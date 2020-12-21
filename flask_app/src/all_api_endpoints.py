@@ -286,6 +286,13 @@ def start_skill():
     welcome_msg = render_template('welcome', date_str=current_date_str)
     return question(welcome_msg)
 
+@ask.intent("StartIntent")
+def start_skill_intent():
+    current_date = datetime.today()
+    current_date_str = current_date.strftime("%d %B, %Y")
+
+    welcome_msg = render_template('welcome', date_str=current_date_str)
+    return question(welcome_msg)
 
 @ask.intent("YesIntent", convert={'code': int})
 def give_results(code):
