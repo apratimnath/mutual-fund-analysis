@@ -286,14 +286,6 @@ def start_skill():
     welcome_msg = render_template('welcome', date_str=current_date_str)
     return question(welcome_msg)
 
-@ask.intent("StartIntent")
-def start_skill_intent():
-    current_date = datetime.today()
-    current_date_str = current_date.strftime("%d %B, %Y")
-
-    welcome_msg = render_template('welcome', date_str=current_date_str)
-    return question(welcome_msg)
-
 @ask.intent("YesIntent", convert={'code': int})
 def give_results(code):
     global frame_data
@@ -344,7 +336,7 @@ def give_results(code):
             income_message = render_template(
                 'income_increase', income_change=income_change)
 
-        final_message = mf_message + "..." + expense_message + "..." + income_message
+        final_message = mf_message + " ... " + expense_message + " ... " + income_message
 
         return statement(final_message)
     else:
