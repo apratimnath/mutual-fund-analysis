@@ -13,6 +13,7 @@ warnings.filterwarnings('ignore')
 
 
 sheet = None
+money_manager_sheet = None
 
 def get_credential_and_connect():
     global sheet
@@ -66,4 +67,58 @@ def update_row(value, total_rows):
         sheet.insert_row(value, total_rows, 'RAW')
     except:
         raise Exception
+
+'''
+Function to load the data from the gspread contatining data from -
+Money Manager
+
+Will load and return the sheet
+'''
+
+def load_data_from_money_manager():
+    global money_manager_sheet
+    # Defining the scope of the OAuth Authentication
+    scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets', "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+    
+    # Getting the credentials
+    
+    '''
+    There are two methods defined to get the credentials
+    
+    If in local, get from the JSON file.
+    If deployed on Heroku, get from the env.
+    '''    
+    try:
+        # Trying with Env
+        json_str = os.environ.get('GOOGLE_CREDENTIALS')
+        is_local = False
+        
+        if(not json_str or len(json_str) == 0):
+            is_local = True
+        
+        print("The state of application is Local", end=" ")
+        print(is_local)
+        
+        if(is_local): 
+            print(os.getcwd())
+            file_path = os.getcwd() + "/src/secret_config/google_credentials.json"
+            creds = ServiceAccountCredentials.from_json_keyfile_name(file_path, scope)
+            # Connecting to the Google Spreadsheet Client
+            client = gspread.authorize(creds)
+            
+        else: 
+            cred_data = json.loads(json_str)            
+            cred_data['private_key'] = cred_data['private_key'].replace('\\n', '\n')
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_data, scope)
+            # Connecting to the Google Spreadsheet Client
+            client = gspread.authorize(creds)
+
+        #Getting the spreadsheet
+        money_manager_sheet = client.open("Personal_Expenditure").sheet1
+
+        return money_manager_sheet.get_all_records()
+    except Exception as e:
+        print(str(e))
+
+        return None
         

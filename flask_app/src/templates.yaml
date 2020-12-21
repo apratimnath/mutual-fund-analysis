@@ -1,0 +1,9 @@
+welcome: Welcome to Personal Investment Analysis. I can provide you with your Day-to-Day Mutual Fund Change and Month-on-Month Expenditure and Income Change, as on {{ date_str }}. To continue please tell me your four-digit voice code?
+mf_increase: Your daily Mutual Fund investment have increased by Rupees {{ mf_change }}. Well invested!
+mf_decrease: Your daily Mutual Fund investment have decreased by Rupees {{ mf_change }}. I'm sure the tables will turn around.
+expense_increase: Your monthly expenditures have increased by Rupees {{ expense_change }}. Time to spend less!
+expense_decrease: Your monthly expenditures have decreased by Rupees {{ expense_change }}. Happy savings!
+income_increase: Your monthly income have increased by Rupees {{ income_change }}. Hardwork pays off!
+income_decrease: Your monthly income have decreased by Rupees {{ income_change }}. I'm sure the tables will turn around.
+failure: Wrong voice code. See you next time...bye!
+stop_skill: See you next time...bye.

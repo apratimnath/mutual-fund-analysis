@@ -1,0 +1,16 @@
+{
+    "intents": [        
+        {
+            "intent": "YesIntent",
+            "slots": [
+                {
+                    "name": "code",
+                    "type": "AMAZON.FOUR_DIGIT_NUMBER"
+                }
+            ]
+        },
+        {
+            "intent": "NoIntent"
+        }
+    ]
+}

@@ -4,24 +4,34 @@ Created on Nov 28, 2020
 @author: apratim
 '''
 import flask
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from flask_cors.extension import CORS
+from flask_ask import Ask, statement, question, session
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import atexit
 from datetime import datetime
 import load_from_gspread
+import personal_finance
 import pandas as pd
 from http.client import HTTPException
 import internal_calculations
 import send_mail
 import warnings
+import json
+import logging
+import math
 
 warnings.filterwarnings('ignore')
 
 app = flask.Flask(__name__)
 CORS(app)
 app.config["DEBUG"] = True
+
+# Alexa Ask Config
+ask = Ask(app, "/alexa-skill")
+
+logging.getLogger("flask_ask").setLevel(logging.DEBUG)
 
 frame_data = None
 list_data = None
@@ -82,7 +92,7 @@ def home():
 def connect_gspread():
     global frame_data
     global list_data
-    
+
     list_data = load_from_gspread.get_credential_and_connect()
     if(list_data == None):
         return internal_server_error("Issue in connecting to GSpread")
@@ -92,8 +102,9 @@ def connect_gspread():
         # Creating the dataframe
         frame_data = pd.DataFrame(list_data)
         do_data_cleaning()
-        calculations_dict = internal_calculations.get_initial_results_dict(frame_data)
-        
+        calculations_dict = internal_calculations.get_initial_results_dict(
+            frame_data)
+
         if(calculations_dict == None or len(calculations_dict) == 0):
             return internal_server_error("Issue in calculating the daily changes. Please refer logs for fore details")
         else:
@@ -106,24 +117,296 @@ def register_user():
     global frame_data
     global list_data
     user_details = request.json
-    
+
     if(user_details != None):
         is_success = send_mail.register_user(user_details)
-        
+
         if(is_success):
             response = {}
             response['status'] = "Success"
             response['message'] = "Successfully sent mail"
-            
+
             return jsonify(response), 200, {'Content-Type': 'application/json'}
     else:
         return no_content("No Content found in request body")
 
 
+'''
+The following methods deals with personal savings.
+List of API Enpoints are - 
+
+1. Get the initial difference (MoM Changes)
+'''
+
+# Get the MoM Changes
+
+
+@app.route('/api/v1/money-manager/get-mom', methods=['GET'])
+def get_last_mom_changes():
+    try:
+        is_loaded_initil_data = personal_finance.get_the_data_from_gspread()
+        if(is_loaded_initil_data):
+            mom_data = personal_finance.load_mom_change()
+
+            if(mom_data == None):
+                return internal_server_error('MoM calculation gives error')
+
+            return jsonify(mom_data), 200, {'Content-Type': 'appliction/json'}
+        else:
+            return internal_server_error('Error in loading the initial data!')
+    except Exception as e:
+        print(str(e))
+
+        return internal_server_error('Error while MoM Calculation')
+
+# Get the month-name
+
+
+@app.route('/api/v1/money-manager/month-names', methods=['GET'])
+def get_month_names():
+    try:
+        result = personal_finance.get_all_month_names()
+
+        if(result != None):
+            return jsonify(result), 200, {'Content-Type': 'appliction/json'}
+        else:
+            return no_content("No Content found")
+    except Exception as e:
+        print(str(e))
+
+        return internal_server_error('Error while fetching all month names')
+
+# Get the box-plot for expenses
+
+
+@app.route('/api/v1/money-manager/boxplot-expenses', methods=['GET'])
+def get_boxplot_expenses():
+    try:
+        result = personal_finance.get_box_plot_expense()
+
+        if(result != None):
+            return json.dumps(result), 200, {'Content-Type': 'appliction/json'}
+        else:
+            return no_content("No Content found")
+    except Exception as e:
+        print(str(e))
+
+        return internal_server_error('Error while creating box plot for expenses')
+
+# Get the box-plot for incomes
+
+
+@app.route('/api/v1/money-manager/boxplot-income', methods=['GET'])
+def get_boxplot_income():
+    try:
+        result = personal_finance.get_box_plot_income()
+
+        if(result != None):
+            return json.dumps(result), 200, {'Content-Type': 'appliction/json'}
+        else:
+            return no_content("No Content found")
+    except Exception as e:
+        print(str(e))
+
+        return internal_server_error('Error while creating box plot for income')
+
+# Get the multi-series line of Expense VS Income (Monthwise)
+
+
+@app.route('/api/v1/money-manager/monthwise-expense-income', methods=['GET'])
+def get_monthwise_expense_income():
+    try:
+        result = personal_finance.get_sum_change_expenditure_income()
+
+        if(result != None):
+            return json.dumps(result), 200, {'Content-Type': 'appliction/json'}
+        else:
+            return no_content("No Content found")
+    except Exception as e:
+        print(str(e))
+
+        return internal_server_error('Error while creating multi-series line of Expense VS Income (Monthwise)')
+
+# Get the Expenditure Pie (Monthwise)
+
+
+@app.route('/api/v1/money-manager/monthwise-expense', methods=['POST'])
+def get_monthwise_expense():
+    try:
+        request_body = request.json
+        month_name = request_body['month_name']
+        result = personal_finance.get_expenditure_category_by_month_name(
+            month_name)
+
+        if(result != None):
+            return json.dumps(result), 200, {'Content-Type': 'appliction/json'}
+        else:
+            return no_content("No Content found")
+    except Exception as e:
+        print(str(e))
+
+        return internal_server_error('Error while creating Pie of Expense (Monthwise)')
+
+# Get the Income Pie (Monthwise)
+
+
+@app.route('/api/v1/money-manager/monthwise-income', methods=['POST'])
+def get_monthwise_income():
+    try:
+        request_body = request.json
+        month_name = request_body['month_name']
+        result = personal_finance.get_income_category_by_month_name(month_name)
+
+        if(result != None):
+            return json.dumps(result), 200, {'Content-Type': 'appliction/json'}
+        else:
+            return no_content("No Content found")
+    except Exception as e:
+        print(str(e))
+
+        return internal_server_error('Error while creating Pie of Expense (Monthwise)')
+
 # Method to do data cleaning of all kind
+
+
 def do_data_cleaning():
     frame_data.replace([''], 'Unknown', inplace=True)
-    
+
+
+'''
+The following API and the intents are created for Alexa
+'''
+
+
+@ask.launch
+def start_skill():
+    current_date = datetime.today()
+    current_date_str = current_date.strftime("%d %B, %Y")
+
+    welcome_msg = render_template('welcome', date_str=current_date_str)
+    return question(welcome_msg)
+
+
+@ask.intent("YesIntent", convert={'code': int})
+def give_results(code):
+    global frame_data
+    global list_data
+
+    if(code == 1023):
+        # Get the d-t-d mutual fund change
+        list_data = load_from_gspread.get_credential_and_connect()
+        frame_data = pd.DataFrame(list_data)
+        do_data_cleaning()
+
+        mf_change = internal_calculations.get_change_by_alexa(frame_data)
+
+        if(mf_change >= 0):
+            mf_message = render_template('mf_increase', mf_change=mf_change)
+        else:
+            mf_change = math.fabs(mf_change)
+            mf_message = render_template('mf_decrease', mf_change=mf_change)
+
+        # Personal Finance Change
+        is_loaded_initil_data = personal_finance.get_the_data_from_gspread()
+        expense_change = 0
+        income_change = 0
+
+        if(is_loaded_initil_data):
+            # Get the expense MoM Change
+            expense_change = personal_finance.load_mom_expense_change_alexa()
+            income_change = personal_finance.load_mom_income_change_alexa()
+
+            if(expense_change > 0):
+                expense_message = render_template(
+                    'expense_increase', expense_change=expense_change)
+            else:
+                expense_change = math.fabs(expense_change)
+                expense_message = render_template(
+                    'expense_decrease', expense_change=expense_change)
+
+            if(income_change >= 0):
+                income_message = render_template(
+                    'income_increase', income_change=income_change)
+            else:
+                income_change = math.fabs(income_change)
+                income_message = render_template(
+                    'income_decrease', income_change=income_change)
+        else:
+            expense_message = render_template(
+                'expense_decrease', expense_change=expense_change)
+            income_message = render_template(
+                'income_increase', income_change=income_change)
+
+        final_message = mf_message + "..." + expense_message + "..." + income_message
+
+        return statement(final_message)
+    else:
+        error_msg = render_template('failure')
+        return statement(error_msg)
+
+
+@ask.intent("NoIntent")
+def end_skill():
+    end_msg = render_template('stop_skill')
+
+    return statement(end_msg)
+
+# Test the Skill Main API
+
+
+@app.route('/api/v1/alexa-skill/test', methods=['GET'])
+def test_alexa_skill_main_intent():
+    global frame_data
+    global list_data
+    # Get the d-t-d mutual fund change
+    list_data = load_from_gspread.get_credential_and_connect()
+    frame_data = pd.DataFrame(list_data)
+    do_data_cleaning()
+
+    mf_change = internal_calculations.get_change_by_alexa(frame_data)
+
+    if(mf_change >= 0):
+        mf_message = render_template('mf_increase', mf_change=mf_change)
+    else:
+        mf_change = math.fabs(mf_change)
+        mf_message = render_template('mf_decrease', mf_change=mf_change)
+
+    # Personal Finance Change
+    is_loaded_initil_data = personal_finance.get_the_data_from_gspread()
+    expense_change = 0
+    income_change = 0
+
+    if(is_loaded_initil_data):
+        # Get the expense MoM Change
+        expense_change = personal_finance.load_mom_expense_change_alexa()
+        income_change = personal_finance.load_mom_income_change_alexa()
+
+        if(expense_change > 0):
+            expense_message = render_template(
+                'expense_increase', expense_change=expense_change)
+        else:
+            expense_change = math.fabs(expense_change)
+            expense_message = render_template(
+                'expense_decrease', expense_change=expense_change)
+
+        if(income_change >= 0):
+            income_message = render_template(
+                'income_increase', income_change=income_change)
+        else:
+            income_change = math.fabs(income_change)
+            income_message = render_template(
+                'income_decrease', income_change=income_change)
+
+    else:
+        expense_message = render_template(
+            'expense_decrease', expense_change=expense_change)
+        income_message = render_template(
+            'income_increase', income_change=income_change)
+
+    final_message = mf_message + "..." + expense_message + "..." + income_message
+
+    return json.dumps(final_message), 200, {'Content-Type': 'appliction/json'}    
+
 '''
 The following method will run a job, to store the next 5 days for the upcoming wee in Google Sheet
 The method runs every Saturday at 5:00 PM
@@ -134,22 +417,22 @@ On success or error, it sends a mail accordingly
 def weekly_insert_in_sheet():
     global frame_data
     global list_data
-    
+
     schedule_success = True
-    
+
     print("Scheduled Job started")
     # Reload the intial data
     list_data = load_from_gspread.get_credential_and_connect()
-    
+
     if(list_data == None or len(list_data) == 0):
         schedule_success = False
         print("Unable to refresh the spreadsheet from google")
     else:
         # Creating the dataframe
-        frame_data = pd.DataFrame(list_data)        
+        frame_data = pd.DataFrame(list_data)
         schedule_success = send_mail.driver_function(frame_data, list_data)
-    
-    if(schedule_success): 
+
+    if(schedule_success):
         current_date = datetime.now()
         print("Scheduled Job successful at -", end=" ")
         print(current_date)
@@ -158,9 +441,10 @@ def weekly_insert_in_sheet():
         print("Scheduled Job failed at -", end=" ")
         print(current_date)
 
-    
+
 scheduler = BackgroundScheduler()
-scheduler.add_job(weekly_insert_in_sheet, CronTrigger.from_crontab('00 17 * * SAT'))
+scheduler.add_job(weekly_insert_in_sheet,
+                  CronTrigger.from_crontab('00 17 * * SAT'))
 scheduler.start()
 
 atexit.register(lambda: scheduler.shutdown())

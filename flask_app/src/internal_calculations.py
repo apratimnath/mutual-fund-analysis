@@ -63,6 +63,41 @@ def get_initial_results_dict(original_data):
     except:
         return None
 
+def get_change_by_alexa(original_data):
+    # Subset of data containing returns
+    valid_data_with_returns = original_data.loc[original_data['Return'] != 'Unknown']    
+    length_of_valid_returns = valid_data_with_returns.shape[0]
+    
+    # Getting the last date
+    last_date = valid_data_with_returns.values[length_of_valid_returns - 1][0]
+    
+    # Get the last date and the date before that data
+    last_date_rows = valid_data_with_returns.loc[valid_data_with_returns['Date'] == last_date]
+    previous_date_rows = valid_data_with_returns.loc[valid_data_with_returns['Date'] != last_date].tail(last_date_rows.shape[0])
+    
+    # last_date_rows_list = last_date_rows.values.tolist()
+    # previous_date_rows_list = previous_date_rows.values.tolist()
+    
+    # Convert to numeric
+    last_date_rows['Investment'] = pd.to_numeric(last_date_rows['Investment'])
+    last_date_rows['Return'] = pd.to_numeric(last_date_rows['Return'])
+    last_date_rows['Net Change'] = pd.to_numeric(last_date_rows['Net Change'])
+    
+    previous_date_rows['Investment'] = pd.to_numeric(previous_date_rows['Investment'])
+    previous_date_rows['Return'] = pd.to_numeric(previous_date_rows['Return'])
+    previous_date_rows['Net Change'] = pd.to_numeric(previous_date_rows['Net Change'])
+    
+    dict_to_return = {}
+    
+    try:
+        overall_list = get_overall_data(last_date_rows, previous_date_rows)
+        
+        if(len(overall_list) == 1):
+            return overall_list[0]['sum_difference']
+        return 0
+    except:
+        return 0
+
     
 def get_app_based_data(last_date_rows, previous_date_rows):
     try:
