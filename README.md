@@ -10,12 +10,15 @@ The various problems faced for the same are -
 2. The historic data is not accurately predicted - Over time the historic data loses importance and is overriden to be fitted only in Time Series Graph.
 3. Periodic Tracking of data - Everyday net change in the invested amount.
 4. Personalized Prediction - Currently all Mutual Fund Predictions are not personalized, only based on overall NAV chnages.
+5. Finance Analysis - Track the monthly Income and Expenditures based on`Money Manager`. 
+5. Alexa Skills - The Day-to-Day change for Mutual Funds & Month-on-Month change for expenses and income re now available over Alexa skills.
 
 ## API Sets
 The app will consist of two major sets of API -
 
 1. Current Data - Various APIs to fetch the current investment data details to be show in the Current Investment Dashboard
 2. Prediction Data - Will predict the futur return, both overall, and per-investment basis, based on the user investment trend (will be available, only when the current dataset reached significant entires)
+3. Personal Finance APIs - Get the MoM changes for expenditure, Calculate the overall expenditure change every Month (SUM, MEAN & STD), Get All the Month Names, For each month get the different categories of expenditure and income, For each month get the Top 5 Spend Categories (Grouped Column Chart), Get the sum change of income and expenditure every month"
 
 ## Data collection, Storage and Analysis Blueprint
 Data from differen apps will be collected in the following way -
