@@ -29,7 +29,7 @@ six==1.15.0
 tzlocal==2.1
 urllib3==1.26.2
 Werkzeug==0.16.0
-Flask-Ask==0.9.8
+Flask-Ask==0.8.8
 PyYAML==3.12
 aniso8601==1.2.0
 cffi==1.14.4
