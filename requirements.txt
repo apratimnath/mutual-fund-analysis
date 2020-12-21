@@ -28,4 +28,12 @@ rsa==4.6
 six==1.15.0
 tzlocal==2.1
 urllib3==1.26.2
-Werkzeug==1.0.1
+Werkzeug==0.16.0
+Flask-Ask==0.9.8
+PyYAML==3.12
+aniso8601==1.2.0
+cffi==1.14.4
+cryptography==3.3.1
+pyOpenSSL==17.0.0
+pycparser==2.20
+
