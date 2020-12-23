@@ -1,16 +1,68 @@
 {
-    "intents": [        
-        {
-            "intent": "YesIntent",
-            "slots": [
-                {
-                    "name": "code",
-                    "type": "AMAZON.FOUR_DIGIT_NUMBER"
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "personal finance analyzer",
+            "modelConfiguration": {
+                "fallbackIntentSensitivity": {
+                    "level": "LOW"
                 }
-            ]
-        },
-        {
-            "intent": "NoIntent"
+            },
+            "intents": [
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": [
+                        "help",
+                        "please help",
+                        "support",
+                        "help me"
+                    ]
+                },
+                {
+                    "name": "YesIntent",
+                    "slots": [
+                        {
+                            "name": "code",
+                            "type": "AMAZON.FOUR_DIGIT_NUMBER"
+                        }
+                    ],
+                    "samples": [
+                        "{code}"
+                    ]
+                },
+                {
+                    "name": "CurrentTypeIntent",
+                    "slots": [],
+                    "samples": [
+                        "current data",
+                        "actual data",
+                        "data from spreadsheet",
+                        "tell me the current data",
+                        "current",
+                        "actual"
+                    ]
+                },
+                {
+                    "name": "FutureTypeIntent",
+                    "slots": [],
+                    "samples": [
+                        "future data",
+                        "predicted data",
+                        "lstm data",
+                        "neural network data",
+                        "tell me the predicted data",
+                        "ai data"
+                    ]
+                },
+                {
+                    "name": "NoIntent",
+                    "slots": [],
+                    "samples": [
+                        "nope",
+                        "no"
+                    ]
+                }
+            ],
+            "types": []
         }
-    ]
+    }
 }

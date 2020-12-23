@@ -1,9 +1,18 @@
 welcome: Welcome to Personal Investment Analysis. I can provide you with your Day-to-Day Mutual Fund Change and Month-on-Month Expenditure and Income Change, as on {{ date_str }}. To continue please tell me your four-digit voice code?
-mf_increase: Your daily Mutual Fund investment have increased by Rupees {{ mf_change }}. Well invested!
-mf_decrease: Your daily Mutual Fund investment have decreased by Rupees {{ mf_change }}. I'm sure the tables will turn around.
-expense_increase: Your monthly expenditures have increased by Rupees {{ expense_change }}. Time to spend less!
-expense_decrease: Your monthly expenditures have decreased by Rupees {{ expense_change }}. Happy savings!
-income_increase: Your monthly income have increased by Rupees {{ income_change }}. Hardwork pays off!
-income_decrease: Your monthly income have decreased by Rupees {{ income_change }}. I'm sure the tables will turn around.
+mf_increase: Your daily Mutual Fund investment have increased by Rupees {{ mf_change }}. Well invested
+mf_decrease: Your daily Mutual Fund investment have decreased by Rupees {{ mf_change }}. I'm sure the tables will turn around
+expense_increase: Your monthly expenditures have increased by Rupees {{ expense_change }}. Time to spend less
+expense_decrease: Your monthly expenditures have decreased by Rupees {{ expense_change }}. Happy savings
+income_increase: Your monthly income have increased by Rupees {{ income_change }}. Hardwork pays off
+income_decrease: Your monthly income have decreased by Rupees {{ income_change }}. I'm sure the tables will turn around
+future_mf_increase: Your daily Mutual Fund investment might increase by Rupees {{ mf_change }}. Fingers crossed
+future_mf_decrease: Your daily Mutual Fund investment might decrease by Rupees {{ mf_change }}. It might be just a phase
+future_expense_increase: Your monthly expenditures might increase by Rupees {{ expense_change }}. Plan now, save more
+future_expense_decrease: Your monthly expenditures might decrease by Rupees {{ expense_change }}. Good days coming up
+future_income_increase: Your monthly income might increase by Rupees {{ income_change }}. Your hardwork will pay off
+future_income_decrease: Your monthly income might decrease by Rupees {{ income_change }}. It might be just a phase
+future_pending: Still haven't gathered enough data to help you with this. Please check back in some days.
 failure: Wrong voice code. See you next time...bye!
 stop_skill: See you next time...bye.
+help: Hello there...I can provide you with your Day-to-Day Mutual Fund Change and Month-on-Month Expenditure and Income Change, as on {{ date_str }}. Since the data is confendential, you need to provide a secret PIN to access the same. Ready? To continue please tell me your four-digit voice code?
+choice: I can provide you the latest data for Mutual Funds and Finace, based on the latest updates, or I can provide you a pedicted value for the upcoming days via Long Short Term Memory Neural Network prediction. Which one do you want?

@@ -16,6 +16,7 @@ import personal_finance
 import pandas as pd
 from http.client import HTTPException
 import internal_calculations
+import update_mf_changes
 import send_mail
 import warnings
 import json
@@ -110,8 +111,25 @@ def connect_gspread():
         else:
             return jsonify(calculations_dict), 200, {'Content-Type': 'application/json'}
 
+# Update the data based on NAV data updated via Google
+# This will be used called reglarly via CRON Scheduler to keep the alive, and updte the data
+
+
+@app.route('/api/v1/update-mf-data', methods=['GET'])
+def update_mf_data():
+    is_success_update = update_mf_changes.driver_function()
+
+    if(is_success_update):
+        success_dict = {}
+        success_dict['code'] = 200
+        success_dict['message'] = "Successfully updated the Base MF Spreadsheet"
+
+        return jsonify(success_dict), 200, {'Content-Type': 'application/json'}
+    return internal_server_error("Issue in updating the Base MF Spreadsheet")
 
 # Send mail to register new users
+
+
 @app.route('/api/v1/register-user', methods=['POST'])
 def register_user():
     global frame_data
@@ -286,62 +304,80 @@ def start_skill():
     welcome_msg = render_template('welcome', date_str=current_date_str)
     return question(welcome_msg)
 
+
 @ask.intent("YesIntent", convert={'code': int})
-def give_results(code):
-    global frame_data
-    global list_data
-
+def verify_code(code):
     if(code == 1023):
-        # Get the d-t-d mutual fund change
-        list_data = load_from_gspread.get_credential_and_connect()
-        frame_data = pd.DataFrame(list_data)
-        do_data_cleaning()
+        choice_msg = render_template('choice')
 
-        mf_change = internal_calculations.get_change_by_alexa(frame_data)
-
-        if(mf_change >= 0):
-            mf_message = render_template('mf_increase', mf_change=mf_change)
-        else:
-            mf_change = math.fabs(mf_change)
-            mf_message = render_template('mf_decrease', mf_change=mf_change)
-
-        # Personal Finance Change
-        is_loaded_initil_data = personal_finance.get_the_data_from_gspread()
-        expense_change = 0
-        income_change = 0
-
-        if(is_loaded_initil_data):
-            # Get the expense MoM Change
-            expense_change = personal_finance.load_mom_expense_change_alexa()
-            income_change = personal_finance.load_mom_income_change_alexa()
-
-            if(expense_change > 0):
-                expense_message = render_template(
-                    'expense_increase', expense_change=expense_change)
-            else:
-                expense_change = math.fabs(expense_change)
-                expense_message = render_template(
-                    'expense_decrease', expense_change=expense_change)
-
-            if(income_change >= 0):
-                income_message = render_template(
-                    'income_increase', income_change=income_change)
-            else:
-                income_change = math.fabs(income_change)
-                income_message = render_template(
-                    'income_decrease', income_change=income_change)
-        else:
-            expense_message = render_template(
-                'expense_decrease', expense_change=expense_change)
-            income_message = render_template(
-                'income_increase', income_change=income_change)
-
-        final_message = mf_message + " ... " + expense_message + " ... " + income_message
-
-        return statement(final_message)
+        return question(choice_msg)
     else:
         error_msg = render_template('failure')
         return statement(error_msg)
+
+
+@ask.intent("CurrentTypeIntent")
+def give_current_results():
+    global frame_data
+    global list_data
+
+    # Get the d-t-d mutual fund change
+    list_data = load_from_gspread.get_credential_and_connect()
+    frame_data = pd.DataFrame(list_data)
+    do_data_cleaning()
+
+    mf_change = internal_calculations.get_change_by_alexa(frame_data)
+
+    if(mf_change >= 0):
+        mf_message = render_template('mf_increase', mf_change=mf_change)
+    else:
+        mf_change = math.fabs(mf_change)
+        mf_message = render_template('mf_decrease', mf_change=mf_change)
+
+    # Personal Finance Change
+    is_loaded_initil_data = personal_finance.get_the_data_from_gspread()
+    expense_change = 0
+    income_change = 0
+
+    if(is_loaded_initil_data):
+        # Get the expense MoM Change
+        expense_change = personal_finance.load_mom_expense_change_alexa()
+        income_change = personal_finance.load_mom_income_change_alexa()
+
+        if(expense_change > 0):
+            expense_message = render_template(
+                'expense_increase', expense_change=expense_change)
+        else:
+            expense_change = math.fabs(expense_change)
+            expense_message = render_template(
+                'expense_decrease', expense_change=expense_change)
+
+        if(income_change >= 0):
+            income_message = render_template(
+                'income_increase', income_change=income_change)
+        else:
+            income_change = math.fabs(income_change)
+            income_message = render_template(
+                'income_decrease', income_change=income_change)
+    else:
+        expense_message = render_template(
+            'expense_decrease', expense_change=expense_change)
+        income_message = render_template(
+            'income_increase', income_change=income_change)
+
+    final_message = mf_message + "..." + \
+        expense_message + "..." + income_message
+
+    return statement(final_message)
+
+
+@ask.intent("FutureTypeIntent")
+def give_future_results(code):
+    # TO DO
+    # Fetch the future type intent
+    future_pending_msg = render_template('future_pending')
+
+    return statement(future_pending_msg)
 
 
 @ask.intent("NoIntent")
@@ -349,6 +385,15 @@ def end_skill():
     end_msg = render_template('stop_skill')
 
     return statement(end_msg)
+
+
+@ask.intent("AMAZON.HelpIntent")
+def help_skill():
+    current_date = datetime.today()
+    current_date_str = current_date.strftime("%d %B, %Y")
+
+    help_msg = render_template('help', date_str=current_date_str)
+    return question(help_msg)
 
 # Test the Skill Main API
 
@@ -404,7 +449,8 @@ def test_alexa_skill_main_intent():
 
     final_message = mf_message + "..." + expense_message + "..." + income_message
 
-    return json.dumps(final_message), 200, {'Content-Type': 'appliction/json'}    
+    return json.dumps(final_message), 200, {'Content-Type': 'appliction/json'}
+
 
 '''
 The following method will run a job, to store the next 5 days for the upcoming wee in Google Sheet

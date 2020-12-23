@@ -2,3 +2,22 @@ YesIntent {code}
 
 NoIntent no
 NoIntent nope
+
+AMAZON.HelpIntent help
+AMAZON.HelpIntent please help
+AMAZON.HelpIntent support
+AMAZON.HelpIntent help me
+
+CurrentTypeIntent current data
+CurrentTypeIntent actual data
+CurrentTypeIntent data from spreadsheet
+CurrentTypeIntent tell me the current data
+CurrentTypeIntent current
+CurrentTypeIntent actual
+
+FutureTypeIntent future data
+FutureTypeIntent predicted data
+FutureTypeIntent lstm data
+FutureTypeIntent neural network data
+FutureTypeIntent tell me the predicted data
+FutureTypeIntent ai data
