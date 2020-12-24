@@ -489,9 +489,10 @@ def weekly_insert_in_sheet():
         print(current_date)
 
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(weekly_insert_in_sheet,
-                  CronTrigger.from_crontab('00 17 * * SAT'))
-scheduler.start()
+# Disabled Scheduler currently as it is handled by Google NAV
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(weekly_insert_in_sheet,
+#                   CronTrigger.from_crontab('00 17 * * SAT'))
+# scheduler.start()
 
-atexit.register(lambda: scheduler.shutdown())
+# atexit.register(lambda: scheduler.shutdown())
