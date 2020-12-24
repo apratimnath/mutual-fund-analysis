@@ -18,6 +18,22 @@
                     ]
                 },
                 {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
                     "name": "YesIntent",
                     "slots": [
                         {
@@ -72,7 +88,6 @@
                     "samples": [
                         "nope",
                         "no",
-                        "no that will be all",
                         "no thank you",
                         "no it is fine"
                     ]
