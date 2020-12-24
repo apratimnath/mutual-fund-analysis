@@ -33,10 +33,13 @@
                     "name": "CurrentTypeIntent",
                     "slots": [],
                     "samples": [
+                        "tell me the current data",
+                        "tell me the latest data",
+                        "tell me data based on today",
+                        "tell me today's data",
                         "current data",
                         "actual data",
                         "data from spreadsheet",
-                        "tell me the current data",
                         "current",
                         "actual"
                     ]
@@ -50,7 +53,17 @@
                         "lstm data",
                         "neural network data",
                         "tell me the predicted data",
-                        "ai data"
+                        "tell me the future data",
+                        "tell me the data based on prediction model",
+                        "tell me the data based on long short term memory neural network",
+                        "tell me the data for the upcoming days",
+                        "ai data",
+                        "yes",
+                        "yes tell me the predicted data",
+                        "yes tell me the future data",
+                        "yes tell me the data based on prediction model",
+                        "yes tell me the data based on long short term memory neural network",
+                        "yes tell me the data for the upcoming days"
                     ]
                 },
                 {
@@ -58,7 +71,10 @@
                     "slots": [],
                     "samples": [
                         "nope",
-                        "no"
+                        "no",
+                        "no that will be all",
+                        "no thank you",
+                        "no it is fine"
                     ]
                 }
             ],

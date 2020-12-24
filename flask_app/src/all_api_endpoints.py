@@ -365,10 +365,12 @@ def give_current_results():
         income_message = render_template(
             'income_increase', income_change=income_change)
 
-    final_message = mf_message + "..." + \
-        expense_message + "..." + income_message
+    redirect_message = render_template('redirect_predict')
 
-    return statement(final_message)
+    final_message = mf_message + "..." + \
+        expense_message + "..." + income_message + "..." + redirect_message
+
+    return question(final_message)
 
 
 @ask.intent("FutureTypeIntent")

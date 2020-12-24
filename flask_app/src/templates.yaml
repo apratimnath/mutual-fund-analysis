@@ -15,4 +15,5 @@ future_pending: Still haven't gathered enough data to help you with this. Please
 failure: Wrong voice code. See you next time...bye!
 stop_skill: See you next time...bye.
 help: Hello there...I can provide you with your Day-to-Day Mutual Fund Change and Month-on-Month Expenditure and Income Change, as on {{ date_str }}. Since the data is confendential, you need to provide a secret PIN to access the same. Ready? To continue please tell me your four-digit voice code?
-choice: I can provide you the latest data for Mutual Funds and Finace, based on the latest updates, or I can provide you a pedicted value for the upcoming days via Long Short Term Memory Neural Network prediction. Which one do you want?
+choice: I can provide you the latest data for Mutual Funds and Finance, based on the latest updates, or I can provide you a pedicted value for the upcoming days using Long Short Term Memory Neural Network prediction. Which one do you want?
+redirect_predict: Do you want to calculate the future predictions as well?
