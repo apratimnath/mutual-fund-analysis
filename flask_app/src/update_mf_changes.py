@@ -21,6 +21,7 @@ import warnings
 import pandas as pd
 import load_from_gspread
 from datetime import date
+import send_mail
 warnings.filterwarnings('ignore')
 
 # Base list
@@ -130,6 +131,9 @@ def update_data():
         # Getting all the rows corresponding to the last date
         data_filtered = base_data_frame.loc[base_data_frame['Date'] == last_date]
 
+        # Get the fund names list
+        fund_names = list(map(lambda x: x[1], data_filtered.values))
+
         # Get the current date in the same format
         current_date = date.today().strftime("%m/%d/%Y")
 
@@ -168,6 +172,14 @@ def update_data():
                     each_data_list, end_row_number)
                 print("Inserted Row - {}".format(end_row_number))
 
+        # Create the mail entry
+        mail_subject = 'Half-hourly Spreadsheet Update | Personal Finance Analyzer'
+        mail_to = 'apratimnath7@gmail.com'
+        mail_body = create_mail_body(
+            current_date, fund_names, current_values_list)
+
+        send_mail.email_alert(mail_subject, mail_body, mail_to)
+
         return True
     except Exception as e:
         print(str(e))
@@ -180,3 +192,32 @@ def update_data():
 def do_data_cleaning():
     global base_data_frame
     base_data_frame.replace([''], 'Unknown', inplace=True)
+
+# Create the text for mail - Half hourly mail update
+
+
+def create_mail_body(current_date, fund_names, current_values_list):
+    # current_date, fund_names, current_values_list
+    body_str = '''
+    Hi Apratim,
+
+    PFB the details of your half-hpurly Spreadsheet update -
+
+    Date - {current_date}
+
+    Fund Name - {fund_1} Value - {value_1}
+    Fund Name - {fund_2} Value - {value_2}
+    Fund Name - {fund_3} Value - {value_3}
+    Fund Name - {fund_4} Value - {value_4}
+    Fund Name - {fund_5} Value - {value_5}
+    Fund Name - {fund_6} Value - {value_6}
+    Fund Name - {fund_7} Value - {value_7}
+    Fund Name - {fund_8} Value - {value_8}
+    Fund Name - {fund_9} Value - {value_9}
+    Fund Name - {fund_10} Value - {value_10}
+
+    Regards,
+    Personal Finance Analyzer Team
+    '''
+
+    return body_str
