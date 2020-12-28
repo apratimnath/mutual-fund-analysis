@@ -218,6 +218,6 @@ def create_mail_body(current_date, fund_names, current_values_list):
 
     Regards,
     Personal Finance Analyzer Team
-    '''
+    '''.format(current_date=current_date, fund_1=fund_names[0], value_1=current_values_list[0], fund_2=fund_names[1], value_2=current_values_list[1], fund_3=fund_names[2], value_3=current_values_list[2], fund_4=fund_names[3], value_4=current_values_list[3], fund_5=fund_names[4], value_5=current_values_list[4], fund_6=fund_names[5], value_6=current_values_list[5], fund_7=fund_names[6], value_7=current_values_list[6], fund_8=fund_names[7], value_8=current_values_list[7], fund_9=fund_names[8], value_9=current_values_list[8], fund_10=fund_names[9], value_10=current_values_list[9])
 
     return body_str
