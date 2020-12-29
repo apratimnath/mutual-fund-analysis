@@ -172,14 +172,6 @@ def update_data():
                     each_data_list, end_row_number)
                 print("Inserted Row - {}".format(end_row_number))
 
-        # Create the mail entry
-        mail_subject = 'Half-hourly Spreadsheet Update | Personal Finance Analyzer'
-        mail_to = 'apratimnath7@gmail.com'
-        mail_body = create_mail_body(
-            current_date, fund_names, current_values_list)
-
-        send_mail.email_alert(mail_subject, mail_body, mail_to)
-
         return True
     except Exception as e:
         print(str(e))
@@ -192,32 +184,3 @@ def update_data():
 def do_data_cleaning():
     global base_data_frame
     base_data_frame.replace([''], 'Unknown', inplace=True)
-
-# Create the text for mail - Half hourly mail update
-
-
-def create_mail_body(current_date, fund_names, current_values_list):
-    # current_date, fund_names, current_values_list
-    body_str = '''
-    Hi Apratim,
-
-    PFB the details of your half-hpurly Spreadsheet update -
-
-    Date - {current_date}
-
-    Fund Name - {fund_1} Value - {value_1}
-    Fund Name - {fund_2} Value - {value_2}
-    Fund Name - {fund_3} Value - {value_3}
-    Fund Name - {fund_4} Value - {value_4}
-    Fund Name - {fund_5} Value - {value_5}
-    Fund Name - {fund_6} Value - {value_6}
-    Fund Name - {fund_7} Value - {value_7}
-    Fund Name - {fund_8} Value - {value_8}
-    Fund Name - {fund_9} Value - {value_9}
-    Fund Name - {fund_10} Value - {value_10}
-
-    Regards,
-    Personal Finance Analyzer Team
-    '''.format(current_date=current_date, fund_1=fund_names[0], value_1=current_values_list[0], fund_2=fund_names[1], value_2=current_values_list[1], fund_3=fund_names[2], value_3=current_values_list[2], fund_4=fund_names[3], value_4=current_values_list[3], fund_5=fund_names[4], value_5=current_values_list[4], fund_6=fund_names[5], value_6=current_values_list[5], fund_7=fund_names[6], value_7=current_values_list[6], fund_8=fund_names[7], value_8=current_values_list[7], fund_9=fund_names[8], value_9=current_values_list[8], fund_10=fund_names[9], value_10=current_values_list[9])
-
-    return body_str
