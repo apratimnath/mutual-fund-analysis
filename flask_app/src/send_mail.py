@@ -125,7 +125,7 @@ def email_mutipart__alert(subject, to, daily_change, current_date, text_color):
     Personal Finance Ananlysis App
     '''.format(daily_change=daily_change)
     
-    html_text = '<b>Your Daily Fund Analysis for {current_date} !</b><br><br><i>Here is how your funds performed today -</i> <br><img src="cid:image1"><br><b><span style="color:{text_color}">Your daily change is {daily_change}.</b><br><br><i>You keep investing, we keep tracking!</i><br><br>Best Regards,<br>Team Personal Finance Analysis'.format(current_date=current_date, text_color=text_color, daily_change=daily_change)
+    html_text = '<b>Your Daily Fund Analysis for {current_date} !</b><br><br><i>PFB a snapshot of the performance of your fund(s) over time -</i> <br><img src="cid:image1"><br><b><span style="color:{text_color}">Your daily change is {daily_change}.</b><br><br><i>You keep investing, we keep tracking!</i><br><br>Best Regards,<br>Team Personal Finance Analysis'.format(current_date=current_date, text_color=text_color, daily_change=daily_change)
     # Encapsulate the plain and HTML versions of the message body in an
     # 'alternative' part, so message agents can decide which they want to display.
     msgAlternative = MIMEMultipart('alternative')
