@@ -9,6 +9,9 @@ __pycache__/
 # Google credentials
 secret_config/
 
+#Vitual Environment(s)
+virtual_env/
+
 # Distribution / packaging
 .Python
 build/
