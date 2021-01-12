@@ -111,10 +111,9 @@ def connect_gspread():
         else:
             return jsonify(calculations_dict), 200, {'Content-Type': 'application/json'}
 
+
 # Update the data based on NAV data updated via Google
-# This will be used called reglarly via CRON Scheduler to keep the alive, and updte the data
-
-
+# This will be used called regularly via CRON Scheduler to keep the alive, and update the data
 @app.route('/api/v1/update-mf-data', methods=['GET'])
 def update_mf_data():
     is_success_update = update_mf_changes.driver_function()
@@ -127,9 +126,41 @@ def update_mf_data():
         return jsonify(success_dict), 200, {'Content-Type': 'application/json'}
     return internal_server_error("Issue in updating the Base MF Spreadsheet")
 
+
+# This method will will be called regularly at the end of the day to send a mail to the user with daily update.
+# The contents of the mail will be -
+# Daily Change
+# Daily Change graph
+# Next day change
+# Next day change graph
+@app.route('/api/v1/send-daily-mailer', methods=['GET'])
+def send_daily_mailer():
+    global frame_data
+    global list_data
+
+    list_data = load_from_gspread.get_credential_and_connect()
+    if(list_data == None):
+        return internal_server_error("Issue in connecting to GSpread")
+    elif(len(list_data) == 0):
+        return no_content("No Content found in the spreadsheet")
+    else:
+        # Creating the dataframe
+        frame_data = pd.DataFrame(list_data)
+        do_data_cleaning() 
+        
+        mail_status = internal_calculations.create_mailer_data(frame_data)
+        
+        if(not mail_status):
+            return internal_server_error("Error in sending daily mailer.")
+        
+        response = {}
+        response['status'] = "Success"
+        response['message'] = "Successfully sent daily mailer"
+
+        return jsonify(response), 200, {'Content-Type': 'application/json'}
+
+
 # Send mail to register new users
-
-
 @app.route('/api/v1/register-user', methods=['POST'])
 def register_user():
     global frame_data
@@ -147,7 +178,6 @@ def register_user():
             return jsonify(response), 200, {'Content-Type': 'application/json'}
     else:
         return no_content("No Content found in request body")
-
 
 '''
 The following methods deals with personal savings.
@@ -289,7 +319,6 @@ def get_monthwise_income():
 
 def do_data_cleaning():
     frame_data.replace([''], 'Unknown', inplace=True)
-
 
 '''
 The following API and the intents are created for Alexa
@@ -453,7 +482,6 @@ def test_alexa_skill_main_intent():
 
     return json.dumps(final_message), 200, {'Content-Type': 'appliction/json'}
 
-
 '''
 The following method will run a job, to store the next 5 days for the upcoming wee in Google Sheet
 The method runs every Saturday at 5:00 PM
@@ -487,7 +515,6 @@ def weekly_insert_in_sheet():
         current_date = datetime.now()
         print("Scheduled Job failed at -", end=" ")
         print(current_date)
-
 
 # Disabled Scheduler currently as it is handled by Google NAV
 # scheduler = BackgroundScheduler()

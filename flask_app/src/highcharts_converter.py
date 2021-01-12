@@ -14,8 +14,6 @@ Contains the following -
 '''
 
 # Get the color based on the last two values
-
-
 def determine_color(data, type_positive):
     value_list = list(map(lambda x: x[1], data.values.tolist()))
 

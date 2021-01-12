@@ -11,7 +11,6 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-
 sheet = None
 money_manager_sheet = None
 nav_sheet = None
@@ -44,7 +43,7 @@ def get_credential_and_connect():
 
         if(is_local):
             print(os.getcwd())
-            file_path = os.getcwd() + "/src/secret_config/google_credentials.json"
+            file_path = "D:/Codebase/Mutual_Fund_Analysis/Backend/mutual-fund-analysis/secret_config/google_credentials.json"
             creds = ServiceAccountCredentials.from_json_keyfile_name(
                 file_path, scope)
             # Connecting to the Google Spreadsheet Client
@@ -74,7 +73,6 @@ def update_row(value, total_rows):
         sheet.insert_row(value, total_rows, 'RAW')
     except:
         raise Exception
-
 
 '''
 Function to load the data from the gspread contatining data from -
@@ -135,7 +133,6 @@ def load_data_from_money_manager():
 
         return None
 
-
 '''
 Function to load the data from the gspread contatining data from -
 Google NAV Change (Auto updated by Google Finance)
@@ -171,7 +168,7 @@ def load_data_from_nav_sheet():
 
         if(is_local):
             print(os.getcwd())
-            file_path = os.getcwd() + "/src/secret_config/google_credentials.json"
+            file_path = "D:/Codebase/Mutual_Fund_Analysis/Backend/mutual-fund-analysis/secret_config/google_credentials.json"
             creds = ServiceAccountCredentials.from_json_keyfile_name(
                 file_path, scope)
             # Connecting to the Google Spreadsheet Client

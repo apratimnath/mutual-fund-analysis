@@ -15,7 +15,6 @@ This file is intended to auto-update the data to the base spreadsheet
 6. Insert/Update the latest changes
 '''
 
-
 import numpy as np
 import warnings
 import pandas as pd
@@ -35,8 +34,6 @@ nav_data_frame = None
 current_values_list = None
 
 # Load the base data frame
-
-
 def driver_function():
     is_success = load_base_spreadsheet()
 
@@ -74,8 +71,6 @@ def load_base_spreadsheet():
         return False
 
 # Load the NAV Data Frame
-
-
 def load_nav_data_frame():
     global nav_data_frame
     try:
@@ -90,8 +85,6 @@ def load_nav_data_frame():
         return False
 
 # Cleanup NAV Data Frame
-
-
 def clean_nav_frame():
     global nav_data_frame
     global current_values_list
@@ -113,8 +106,6 @@ def clean_nav_frame():
         return False
 
 # Insert/Update the latest data into base_data_frame
-
-
 def update_data():
     global base_data_list
     global base_data_frame
@@ -126,7 +117,7 @@ def update_data():
         current_length = len(base_data_list)
 
         # Getting the last date
-        last_date = base_data_frame.values[current_length-1][0]
+        last_date = base_data_frame.values[current_length - 1][0]
 
         # Getting all the rows corresponding to the last date
         data_filtered = base_data_frame.loc[base_data_frame['Date'] == last_date]
@@ -179,8 +170,6 @@ def update_data():
         return False
 
 # Clean the data
-
-
 def do_data_cleaning():
     global base_data_frame
     base_data_frame.replace([''], 'Unknown', inplace=True)

@@ -10,6 +10,9 @@ import json
 import load_from_gspread
 import os
 import warnings
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 
 warnings.filterwarnings('ignore')
 
@@ -96,6 +99,89 @@ def email_alert(subject, body, to):
     except:
         return False
     finally: 
+        server.quit()
+
+        
+def email_mutipart__alert(subject, to, daily_change, current_date, text_color):
+    msg = MIMEMultipart('related')
+    msg['subject'] = subject
+    msg['to'] = to
+    msg.preamble = 'This is a multi-part message in MIME format.'
+    
+    # Create the Alternative Text
+    alt_text = '''
+    Hi Apratim,
+    
+    Hope you're doing well!
+    There was some problem in showing the HTML Content in the mailer. But don't worry, our teams are working on it!
+    
+    Meanwhile, here's your daily change details -
+    
+    Daily mutual fund change - {daily_change}
+    
+    Keep Investing!
+    
+    Best Regards,
+    Personal Finance Ananlysis App
+    '''.format(daily_change=daily_change)
+    
+    html_text = '<b>Your Daily Fund Analysis for {current_date} !</b><br><br><i>Here is how your funds performed today -</i> <br><img src="cid:image1"><br><b><span style="color:{text_color}">Your daily change is {daily_change}.</b><br><br><i>You keep investing, we keep tracking!</i><br><br>Best Regards,<br>Team Personal Finance Analysis'.format(current_date=current_date, text_color=text_color, daily_change=daily_change)
+    # Encapsulate the plain and HTML versions of the message body in an
+    # 'alternative' part, so message agents can decide which they want to display.
+    msgAlternative = MIMEMultipart('alternative')
+    msg.attach(msgAlternative)
+    
+    msgText = MIMEText(alt_text)
+    msgAlternative.attach(msgText)
+    
+    # We reference the image in the IMG SRC attribute by the ID we give it below
+    msgText = MIMEText(html_text, 'html')
+    msgAlternative.attach(msgText)
+    
+    # This example assumes the image is in the current directory
+    fp = open('current_data_plot.png', 'rb')
+    msgImage = MIMEImage(fp.read())
+    
+    # Define the image's ID as referenced above
+    msgImage.add_header('Content-ID', '<image1>')
+    msg.attach(msgImage)  
+    
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+        
+    try:
+        json_str = os.environ.get('GMAIL_CREDENTIALS')
+        is_local = False
+        
+        if(not json_str or len(json_str) == 0):
+            is_local = True
+            
+        print("The state of application is Local", end=" ")
+        print(is_local)
+        
+        if(is_local):
+            print(os.getcwd())
+            file_path = "D:/Codebase/Mutual_Fund_Analysis/Backend/mutual-fund-analysis/config/gmail_credentials.json"
+            gmail_credentials_file = open(file_path)
+            gmail_credentials = json.load(gmail_credentials_file)
+        else:
+            gmail_credentials = json.loads(json_str)
+        
+        sender = gmail_credentials['email']
+        password = gmail_credentials['password']
+        
+        msg['from'] = sender 
+    
+        server.starttls()
+        server.login(sender, password)
+        
+        server.sendmail(sender, to, msg.as_string())
+        
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    finally:
+        fp.close() 
         server.quit()
 
         

@@ -3,6 +3,10 @@ Created on Nov 29, 2020
 
 @author: apratim
 '''
+from datetime import datetime
+from matplotlib import pyplot
+import send_mail
+import os
 
 '''
 After we get the initial data loaded from google spreadsheet, we will do the following -
@@ -62,6 +66,7 @@ def get_initial_results_dict(original_data):
         return dict_to_return
     except:
         return None
+
 
 def get_change_by_alexa(original_data):
     # Subset of data containing returns
@@ -212,3 +217,88 @@ def get_overall_data(last_date_rows, previous_date_rows):
     except:
         raise ValueError
 
+'''
+The below function(s) serves the following purpose - 
+
+1. Create a graph using pyplot for the sum of each date
+2. Create HTML Content
+3. Save the plot in the local storage (temp)
+4. Create a mailer
+5. Send the mailer
+
+TODO - Add the future component in the same mailer. 
+'''
+
+
+def create_mailer_data(mf_data):
+    try:
+        grouped_mf_data = mf_data.groupby('Date', as_index=False).agg({'Return':[np.sum]})
+        # Renaming the columns
+        grouped_mf_data.columns = ['Date', 'Value']
+        
+        # Create a new date column to sort the data
+        grouped_mf_data['Modified_Date'] = grouped_mf_data['Date'].apply(lambda x: datetime.strptime(x, '%m/%d/%Y'))
+        grouped_mf_data.sort_values(by=['Modified_Date'], inplace=True, ascending=True)
+        
+        # Create the sting equivalent of the date olum
+        grouped_mf_data['Date_Modified_Str'] = grouped_mf_data['Date'].apply(lambda x: datetime.strptime(x, '%m/%d/%Y').strftime("%Y-%m-%d"))
+        
+        # Drop the extra columns and rename
+        grouped_mf_data = grouped_mf_data.drop(['Date', 'Modified_Date'], axis=1)
+        grouped_mf_data.columns = ['Value', 'Date']
+        grouped_mf_data = grouped_mf_data[['Date', 'Value']]
+        
+        if(len(grouped_mf_data) > 0):
+            values_list = list(map(lambda x: x[1], grouped_mf_data.values.tolist()))
+            daily_change = round(values_list[-1] - values_list[-2], 2)
+            date_list = list(map(lambda x: x[0], grouped_mf_data.values.tolist()))
+            current_date = datetime.strptime(date_list[-1], '%Y-%m-%d').strftime("%A, %b %d, %Y")
+            
+            #Get the text color
+            text_color = 'red'
+            if(daily_change > 0):
+                text_color = 'green'
+                
+            print(daily_change)
+            print(current_date)
+            
+            create_plot = create_and_save_plot(grouped_mf_data)
+            
+            if(create_plot):
+                subject = "Daily Updates | " + current_date
+                receiver = "apratimnath7@gmail.com"
+                mail_sent = send_mail.email_mutipart__alert(subject, receiver, daily_change, current_date, text_color)
+                
+                if(mail_sent):
+                    return True
+        
+        return False
+    except Exception as e:
+        print(e)
+        return False
+    finally:
+        os.remove('current_data_plot.png') 
+
+
+# Function to create and save the plot
+def create_and_save_plot(grouped_mf_data):
+    try:
+        fig, ax = pyplot.subplots()
+        grouped_mf_data['Actual_Date'] = grouped_mf_data['Date'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d'))
+        ax.plot(grouped_mf_data['Actual_Date'], grouped_mf_data['Value'], color=get_line_color(grouped_mf_data.values.tolist()))
+        ax.xaxis_date()  # interpret the x-axis values as dates
+        fig.set_size_inches(9, 5, forward=True)
+        fig.autofmt_xdate()  # make space for and rotate the x-axis tick labels
+        
+        fig.savefig('current_data_plot.png')
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+
+# Function to determine the color
+def get_line_color(values):
+    if(values[-1][1] > values[-2][1]):
+        return 'green'
+    return 'red'

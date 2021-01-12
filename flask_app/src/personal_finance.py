@@ -76,9 +76,8 @@ def add_columns():
     base_data['month_year'] = base_data['date'].apply(month_year)
     base_data['day_of_week'] = base_data['date'].apply(day_of_week)
 
+
 # Adding the Month-Year Column
-
-
 def month_year(date_text):
     try:
         return datetime.strptime(date_text, '%m/%d/%Y').strftime("%b-%Y")
@@ -96,9 +95,8 @@ def day_of_week(date_text):
         print(date_text)
         return date_text
 
+
 # Seperate the dataframes based on income/expense
-
-
 def seperate_dataframes():
     global income_data
     global expense_data
@@ -118,9 +116,8 @@ def seperate_dataframes():
     expense_data = expense_data.sort_values(by=['date'], ascending=True)
     income_data = income_data.sort_values(by=['date'], ascending=True)
 
+
 # Load MoM Change for the last two months
-
-
 def load_mom_change():
     try:
         grouped_expense_date = expense_data.groupby(
@@ -149,9 +146,8 @@ def load_mom_change():
 
         return None
 
+
 # Alexa Skill to get monthly expense
-
-
 def load_mom_expense_change_alexa():
     try:
         grouped_expense_date = expense_data.groupby(
@@ -176,9 +172,8 @@ def load_mom_expense_change_alexa():
 
         return 0
 
+
 # Alexa Skill to get monthly income
-
-
 def load_mom_income_change_alexa():
     try:
         grouped_income_date = income_data.groupby(
@@ -204,10 +199,9 @@ def load_mom_income_change_alexa():
 
         return 0
 
+
 # Calculate the overall expenditure change every Month (SUM, MEAN & STD)
 # And get all the month names
-
-
 def get_box_plot_expense():
     global expense_data
 
@@ -240,10 +234,9 @@ def get_box_plot_expense():
 
     return series_dict
 
+
 # Calculate the overall income change every Month (SUM, MEAN & STD)
 # And get all the month names
-
-
 def get_box_plot_income():
     global income_data
 
@@ -272,9 +265,8 @@ def get_box_plot_income():
 
     return series_dict
 
+
 # Get the multiple-line sum change of expenditure VS income line
-
-
 def get_sum_change_expenditure_income():
     global expense_data
     global income_data
@@ -315,9 +307,8 @@ def get_sum_change_expenditure_income():
         grouped_expense_date, grouped_income_date, 'Total Count', 'Expense/Month', 'Income/Month')
     return multiple_series_line_dict
 
+
 # Get Expense by Month
-
-
 def get_expenditure_category_by_month_name(month_name):
     global expense_data
     expense_month_year = expense_data.loc[expense_data['month_year'] == month_name]
@@ -327,9 +318,8 @@ def get_expenditure_category_by_month_name(month_name):
     expense_month_year.columns = ['category_name', 'sum_amount']
     return highcharts_converter.create_single_series_pie(expense_month_year, 'Monthly Expenditure')
 
+
 # Get Income by Month
-
-
 def get_income_category_by_month_name(month_name):
     global income_data
     income_month_year = income_data.loc[income_data['month_year'] == month_name]
@@ -340,8 +330,6 @@ def get_income_category_by_month_name(month_name):
 
 
 # Get all the month names
-
-
 def get_all_month_names():
     global expense_data
 
