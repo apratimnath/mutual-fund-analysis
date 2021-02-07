@@ -516,10 +516,14 @@ def weekly_insert_in_sheet():
         print("Scheduled Job failed at -", end=" ")
         print(current_date)
 
-# Disabled Scheduler currently as it is handled by Google NAV
-# scheduler = BackgroundScheduler()
-# scheduler.add_job(weekly_insert_in_sheet,
-#                   CronTrigger.from_crontab('00 17 * * SAT'))
-# scheduler.start()
 
-# atexit.register(lambda: scheduler.shutdown())
+def send_weekly_mail_model_update():
+    print("Here")
+
+    
+# Disabled Scheduler currently as it is handled by Google NAV
+scheduler = BackgroundScheduler()
+scheduler.add_job(send_weekly_mail_model_update, CronTrigger.from_crontab('50 12 * * SUN'))
+scheduler.start()
+  
+atexit.register(lambda: scheduler.shutdown())
