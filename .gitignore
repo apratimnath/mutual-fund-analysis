@@ -11,6 +11,7 @@ secret_config/
 
 #Vitual Environment(s)
 virtual_env/
+virtual_envs/
 
 # Distribution / packaging
 .Python
