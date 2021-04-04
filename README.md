@@ -13,6 +13,10 @@ The various problems faced for the same are -
 5. Finance Analysis - Track the monthly Income and Expenditures based on`Money Manager`. 
 5. Alexa Skills - The Day-to-Day change for Mutual Funds & Month-on-Month change for expenses and income re now available over Alexa skills.
 
+## Google Colaboratory Notebooks
+1. RNN Prediction for upcoming trends in the funds (Step-forward) - [Link to notebook](https://colab.research.google.com/drive/1JKrulU9pEz3Z38gI7SY6wUmX0y6vOxxW?usp=sharing)
+2. RGeneral calculations for MF Analysis - [Link to notebook](https://colab.research.google.com/drive/11DPecNi8eduuYcyNLmBInc40vM1iEpGq?usp=sharing)
+
 ## API Sets
 The app will consist of two major sets of API -
 
