@@ -43,7 +43,7 @@ def get_credential_and_connect():
 
         if(is_local):
             print(os.getcwd())
-            file_path = "D:/Codebase/Mutual_Fund_Analysis/Backend/mutual-fund-analysis/secret_config/google_credentials.json"
+            file_path = os.getcwd() + "/secret_config/google_credentials.json"
             creds = ServiceAccountCredentials.from_json_keyfile_name(
                 file_path, scope)
             # Connecting to the Google Spreadsheet Client
@@ -109,7 +109,7 @@ def load_data_from_money_manager():
 
         if(is_local):
             print(os.getcwd())
-            file_path = os.getcwd() + "/src/secret_config/google_credentials.json"
+            file_path = os.getcwd() + "/secret_config/google_credentials.json"
             creds = ServiceAccountCredentials.from_json_keyfile_name(
                 file_path, scope)
             # Connecting to the Google Spreadsheet Client
@@ -168,7 +168,7 @@ def load_data_from_nav_sheet():
 
         if(is_local):
             print(os.getcwd())
-            file_path = "D:/Codebase/Mutual_Fund_Analysis/Backend/mutual-fund-analysis/secret_config/google_credentials.json"
+            file_path = os.getcwd() + "/secret_config/google_credentials.json"
             creds = ServiceAccountCredentials.from_json_keyfile_name(
                 file_path, scope)
             # Connecting to the Google Spreadsheet Client
@@ -203,5 +203,12 @@ def insert_nav_row(value, row_number):
 def update_nav_cell(value, row_number, column_number):
     try:
         sheet.update_cell(row_number, column_number, value)
+    except:
+        raise Exception
+
+    
+def update_master_cell(value, row_number, column_number):
+    try:
+        nav_sheet.update_cell(row_number, column_number, value)
     except:
         raise Exception
