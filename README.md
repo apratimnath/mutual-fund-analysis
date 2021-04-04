@@ -33,3 +33,9 @@ Data from differen apps will be collected in the following way -
 ## Deployment
 
 Deployed using Heroku.
+
+## Attaching to Heroku Repository
+
+1. heroku git:remote -a mf-analysis-backend
+2. git pull heroku main
+3. git push heroku main
