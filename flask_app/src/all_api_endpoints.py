@@ -518,12 +518,14 @@ def weekly_insert_in_sheet():
 
 
 def send_weekly_mail_model_update():
-    print("Here")
+    current_time = datetime.now()
+    print("The Scheduled Proccess started at -", end=" ")
+    print(current_time)
 
     
 # Disabled Scheduler currently as it is handled by Google NAV
 scheduler = BackgroundScheduler()
-scheduler.add_job(send_weekly_mail_model_update, CronTrigger.from_crontab('50 12 * * SUN'))
+scheduler.add_job(send_weekly_mail_model_update, CronTrigger.from_crontab('25 9 * * TUE'))
 scheduler.start()
   
 atexit.register(lambda: scheduler.shutdown())
