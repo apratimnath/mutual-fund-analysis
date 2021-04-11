@@ -79,6 +79,7 @@ def check_and_update_nav_frame():
 
         nav_data_frame = pd.DataFrame(nav_data_list)        
         date_of_update = list(map(lambda x:str(x[7]), nav_data_frame.values))
+        last_update_month_date = list(map(lambda x:str(x[9]), nav_data_frame.values))
         
         date_list = []
         
@@ -87,6 +88,7 @@ def check_and_update_nav_frame():
             date_list.append(list(map(int, list(map(lambda x: x.strip(), each_value_list)))))
         
         current_date = int(date.today().strftime("%d"))
+        current_month = date.today().strftime("%d-%b")
         
         # No of days required for processing, though that is tentative
         processing_days = 3
@@ -102,16 +104,20 @@ def check_and_update_nav_frame():
             
             # Check the if SIP is renewed
             for each_date in dates_for_current_mf:
-                if(each_date + processing_days == current_date):
+                if(each_date + processing_days == current_date and last_update_month_date[index] != current_month):
                     is_renewed = True
                     break
             
             if(is_renewed):
-                current_values_list[index][4] += round(float(current_values_list[index][6]) / float(current_values_list[index][3]), 3)
+                current_values_list[index][4] += round(current_values_list[index][6] / current_values_list[index][3], 3)
                 current_values_list[index][5] = current_values_list[index][3] * current_values_list[index][4]
+                current_values_list[index][8] += current_values_list[index][6]
+                current_values_list[index][9] = current_month
                 
                 load_from_gspread.update_master_cell(current_values_list[index][4], row_number, 5)
                 load_from_gspread.update_master_cell(current_values_list[index][5], row_number, 6)
+                load_from_gspread.update_master_cell(current_values_list[index][8], row_number, 9)
+                load_from_gspread.update_master_cell(current_values_list[index][9], row_number, 10)
                 
                 print("Updated Row - {} in the Master Sheet".format(row_number))
                 
@@ -150,7 +156,7 @@ def clean_nav_frame():
 
     try:
         nav_data_frame = nav_data_frame.drop(
-            ['MF Code', 'Latest NAV', 'Units', 'Renew Amount', 'Renew Date'], axis=1)
+            ['MF Code', 'Latest NAV', 'Units', 'Renew Amount', 'Renew Date', 'Last Update'], axis=1)
 
         # Round the current values
         nav_data_frame['Current Value'] = nav_data_frame['Current Value'].apply(
